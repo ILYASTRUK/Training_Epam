@@ -1,0 +1,10 @@
+Car
+Banana
+Mouse
+Bottle
+Notebook
+Ring
+Sword
+Disk
+Smartphone
+Cup
