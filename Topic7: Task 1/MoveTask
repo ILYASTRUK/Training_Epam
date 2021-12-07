@@ -1,0 +1,117 @@
+#include <iostream>
+#include<string>
+using namespace std;
+
+//Тема 8 Задание 3-4 Реализовать собственную строку с поддержкой семантики перемещения
+class MyString
+{
+private:
+	char* mas;
+	int size;
+
+public:
+	MyString() { cout << "Constructor" << endl; }
+	MyString(const char* str) : size(strlen(str))
+	{
+		cout << "Constructor with param" << endl;
+		mas = new char[size + 1];
+		strcpy_s(mas, size + 1, str);
+	}
+	MyString(const MyString& t) //конструктор копирования
+	{
+		cout << "Copy Constructor" << endl;
+		size = strlen(t.mas);
+		mas = new char[size + 1];
+		*mas = *t.mas;
+	}
+	MyString(MyString&& test)noexcept//конструктор перемещения
+	{
+		cout << "Move Constructor" << endl;
+
+		size = test.size;
+		mas = test.mas;
+
+		test.mas = nullptr;
+		test.size = 0;
+	}
+	MyString operator=(const MyString& t) //копирующий оператор присваивания
+	{
+		cout << "Copy operator=" << endl;
+
+		if (this == &t) //проверка на одинаковость
+		{
+			return *this;
+		}
+
+		delete mas;
+		size = strlen(t.mas);
+		mas = new char[size + 1];
+		*mas = *t.mas;
+		return *this;
+	}
+	MyString& operator=(MyString&& t) noexcept //перемещающий оператор присваивания
+	{
+		cout << "Move operator=" << endl;
+
+		if (this == &t)//проверка на одинаковость
+		{
+			return *this;
+		}
+
+		size = t.size;
+		mas = t.mas;
+
+		t.mas = nullptr;
+		t.size = 0;
+
+		return *this;
+	}
+	~MyString()
+	{
+		if (mas)
+		{
+			cout << "\nDestructor" << endl;
+			delete[] mas;
+			mas = nullptr;
+		}
+	}
+
+	void MyShow() const
+	{
+		cout << mas << endl;
+	}
+
+	size_t MySize() const
+	{
+		return size;
+	}
+};
+
+class TextView //для проверки модификатора const
+{
+private:
+	MyString str;
+public:
+	TextView(const MyString _str)
+		:str(move(_str))
+	{}
+};
+
+int main()
+{
+	MyString str1("i am computer");
+	//MyString string(str1);
+	//MyString string (move(str1));
+
+	//TextView text("I  am  car"); //Вызовится конструктор копирования, так как модификатор const неявно преобразует rvalue _str в const lvalue
+
+	//MyString str2 (move(str1));
+	//str1 = move(str2);
+	//str1.MyShow();
+	int s = 5;
+
+	[=]() mutable { s++;
+	cout << s; };
+
+	cout << s;
+}
